@@ -4,17 +4,45 @@ package SNMP::Parallel::Utils;
 
 SNMP::Parallel::Utils - Utils for SNMP::Parallel
 
+=head1 DESCRIPTION
+
+This modul can export functions to other modules.
+
 =head1 SYNOPSIS
 
- use SNMP::Parallel::Utils;
- #...
+ use SNMP::Parallel::Utils ':all';
+ use SNMP::Parallel::Utils qw/function_name/;
 
 =cut 
 
-use Moose;
+use strict;
+use warnings;
 use SNMP;
 
+BEGIN {
+    use Sub::Exporter;
+    my @exports = qw/ match_oid make_numeric_oid make_name_oid varbind /;
+    Sub::Exporter::setup_exporter({
+        exports => \@exports,
+        groups => { all => \@exports },
+    });
+}
+
 =head1 FUNCTIONS
+
+=head2 varbind
+
+ $varbind_obj = varbind($oid, $iid, $value, $type);
+ $varbind_obj = varbind($oid, undef, $value, $type);
+
+Build a varbind object. See L<SNMP/Acceptable_variable_formats> for
+more information.
+
+=cut
+
+sub varbind {
+    return SNMP::VarBind->new(@_);
+}
 
 =head2 match_oid
 
