@@ -1,14 +1,14 @@
-package SNMP::Effective::AttributeHelpers::Trait::VarList;
+package SNMP::Parallel::AttributeHelpers::Trait::VarList;
 
 =head1 NAME
 
-SNMP::Effective::AttributeHelpers::Trait::VarList
+SNMP::Parallel::AttributeHelpers::Trait::VarList
 
 =cut
 
 use Moose::Role;
 use MooseX::AttributeHelpers;
-use SNMP::Effective::AttributeHelpers::MethodProvider::VarList;
+use SNMP::Parallel::AttributeHelpers::MethodProvider::VarList;
 
 with 'MooseX::AttributeHelpers::Trait::Collection::Array';
 
@@ -24,7 +24,7 @@ has method_provider => (
     is => 'ro',
     isa => 'ClassName',
     predicate => 'has_method_provider',
-    default => 'SNMP::Effective::AttributeHelpers::MethodProvider::VarList',
+    default => 'SNMP::Parallel::AttributeHelpers::MethodProvider::VarList',
 );
 
 =head1 METHODS
@@ -51,7 +51,7 @@ before _process_options => sub {
 
 =head1 SEE ALSO
 
-L<SNMP::Effective::AttributeHelpers::MethodProvider::VarList>
+L<SNMP::Parallel::AttributeHelpers::MethodProvider::VarList>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -59,7 +59,7 @@ L<SNMP::Effective::AttributeHelpers::MethodProvider::VarList>
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

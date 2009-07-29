@@ -1,18 +1,18 @@
-package SNMP::Effective::AttributeHelpers::MethodProvider::HostList;
+package SNMP::Parallel::AttributeHelpers::MethodProvider::HostList;
 
 =head1 NAME
 
-SNMP::Effective::AttributeHelpers::MethodProvider::HostList
+SNMP::Parallel::AttributeHelpers::MethodProvider::HostList
 
 =head1 DESCRIPTION
 
 This module does the role
-L<SNMP::Effective::AttributeHelpers::MethodProvider::Hash>.
+L<SNMP::Parallel::AttributeHelpers::MethodProvider::Hash>.
 
 =cut
 
 use Moose::Role;
-use SNMP::Effective::Host;
+use SNMP::Parallel::Host;
 
 with 'MooseX::AttributeHelpers::MethodProvider::Hash';
 
@@ -24,7 +24,7 @@ with 'MooseX::AttributeHelpers::MethodProvider::Hash';
  $host_obj = $self->$code(\%args);
  $host_obj = $self->$code($host_obj);
 
-Add a new L<SNMP::Effective::Host> object to list.
+Add a new L<SNMP::Parallel::Host> object to list.
 
 =cut
 
@@ -40,7 +40,7 @@ sub set : method {
         }
         elsif(ref $_[0] eq 'HASH') {
             return $super->($self,
-                $_[0]->{'address'} => SNMP::Effective::Host->new($_[0])
+                $_[0]->{'address'} => SNMP::Parallel::Host->new($_[0])
             );
         }
         elsif(blessed $_[0])  {
@@ -90,7 +90,7 @@ sub is_empty : method {
 
 =head1 SEE ALSO
 
-L<SNMP::Effective::AttributeHelpers::Trait::VarList>
+L<SNMP::Parallel::AttributeHelpers::Trait::VarList>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -98,7 +98,7 @@ L<SNMP::Effective::AttributeHelpers::Trait::VarList>
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

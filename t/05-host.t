@@ -6,13 +6,13 @@ use lib qw(./lib);
 use Test::More tests => 7;
 
 BEGIN {
-    use_ok('SNMP::Effective::Host');
+    use_ok('SNMP::Parallel::Host');
     no warnings 'redefine';
     *SNMP::_new_session = sub { 42 };
 }
 
 my $addr = "127.0.0.1";
-my $host = SNMP::Effective::Host->new(
+my $host = SNMP::Parallel::Host->new(
                address => $addr,
                callback => sub { 42 },
            );

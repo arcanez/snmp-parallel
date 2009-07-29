@@ -1,12 +1,12 @@
-package SNMP::Effective::Utils;
+package SNMP::Parallel::Utils;
 
 =head1 NAME
 
-SNMP::Effective::Utils - Utils for SNMP::Effective
+SNMP::Parallel::Utils - Utils for SNMP::Parallel
 
 =head1 SYNOPSIS
 
- use SNMP::Effective::Utils;
+ use SNMP::Parallel::Utils;
  #...
 
 =cut 
@@ -80,7 +80,7 @@ sub make_name_oid {
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

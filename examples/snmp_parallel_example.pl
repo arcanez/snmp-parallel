@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 
 #==========================
-# snmp_effective_example.pl
+# snmp_parallel_example.pl
 #==========================
 
 use warnings;
 use strict;
 use lib qw(./lib ../lib);
 use Log::Log4perl;
-use SNMP::Effective;
+use SNMP::Parallel;
 
-### set up Log::Log4perl, before SNMP::Effective do
+### set up Log::Log4perl, before SNMP::Parallel do
 my $LOG4PERL = {
     "log4perl.rootLogger"             => "TRACE, screen",
     "log4perl.appender.screen"        => "Log::Log4perl::Appender::Screen",
@@ -19,8 +19,8 @@ my $LOG4PERL = {
 
 Log::Log4perl->init($LOG4PERL) unless(Log::Log4perl->initialized);
 
-### set up SNMP::Effective
-my $effective = SNMP::Effective->new(
+### set up SNMP::Parallel
+my $parallel = SNMP::Parallel->new(
                     master_timeout => 5,
                     dest_host      => "127.0.0.1",
                     get            => "1.3.6.1.2.1.1.1.0", # sysDescr.0
@@ -34,7 +34,7 @@ my $effective = SNMP::Effective->new(
                 );
 
 ### the end
-$effective->execute;
+$parallel->execute;
 exit 0;
 
 
@@ -67,7 +67,7 @@ sub my_callback { #===========================================================
     } 
 
     ### the end
-    return; # snmp-effective doesn't care about the return value
+    return; # snmp-parallel doesn't care about the return value
 }
 
 sub say { #===================================================================
