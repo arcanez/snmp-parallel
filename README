@@ -5,21 +5,28 @@ VERSION
     0.01_0001
 
 SYNOPSIS
+<<<<<<< HEAD:README
      use SNMP::Parallel;
      
  my $snmp = SNMP::Parallel->new(
+=======
+     use SNMP::Effective;
+
+     my $snmp = SNMP::Effective->new(
+>>>>>>> 518361c0c50839fa213ff09f102513976f3a38bb:README
          max_sessions   => $NUM_POLLERS,
          master_timeout => $TIMEOUT_SECONDS,
      );
-     
- $snmp->add(
+
+     $snmp->add(
          dest_host => $ip,
          callback  => sub { store_data() },
          get       => [ '1.3.6.1.2.1.1.3.0', 'sysDescr' ],
      );
+
      # lather, rinse, repeat
-     
- # retrieve data from all hosts
+     # retrieve data from all hosts
+
      $snmp->execute;
 
 DESCRIPTION
@@ -67,7 +74,7 @@ OBJECT ATTRIBUTES
   master_timeout
      $seconds = $self->master_timeout;
 
-    Maximum seconds for execute() to run. Default is -1, which means
+    Maximum seconds for execute() to run. Default is undef, which means
     forever.
 
   max_sessions
@@ -77,13 +84,8 @@ OBJECT ATTRIBUTES
 
   sessions
      $int = $self->sessions;
-     $self->inc_sessions;
-     $self->dec_sessions;
 
-  log
-     $log = $self->log;
-
-    Returns a log object. Need to comply with the Log::Log4perl api.
+    Returns the number of active sessions.
 
 METHODS
   BUILDARGS
@@ -138,14 +140,27 @@ METHODS
      $bool = $self->execute;
 
     This method starts setting and/or getting data. It will run as long as
-    necessary, or until "master_timeout" seconds has passed. Every time some
+    necessary, or until master_timeout seconds has passed. Every time some
     data is set and/or retrieved, it will call the callback-method, as
     defined globally or per host.
 
-  add_host
-     $self->add_host($host_obj);
-     $self->add_host([$hostname, %args]);
-     $self->add_host(\%args);
+    Return true on success, false if no hosts are set up and "undef" if
+    "SNMP::MainLoop()" exit after master_timeout seconds.
+
+  add_snmp_callback
+     $class->add_snmp_callback($name, $snmp_method, sub {});
+     $self->add_snmp_callback($name, $snmp_method, sub {});
+
+    Will add a callback for SNMP::Effective.
+
+    $name is what you refere to in SNMP::Effective::add():
+
+     $self->add( $name => ['sysDescr'] );
+
+    $snmp_method is the method which should be called on the SNMP::Session
+    object.
+
+    See SNMP::Effective::Callbacks for default callbacks.
 
   get_host
      $host_obj = $self->get_host($hostname);
@@ -156,35 +171,28 @@ METHODS
   hosts
      @hostnames = $self->hosts;
 
-  add_method
-     $self->add_method($dispatch_method => $snmp_method);
-
-  get_method
-     $snmp_method = $self->get_method($dispatch_method);
-
 The callback method
     When "SNMP" is done collecting data from a host, it calls a callback
     method, provided by the "Callback => sub{}" argument. Here is an example
     of a callback method:
 
      sub my_callback {
-         my($host, $error) = @_
-      
-     if($error) {
-             warn "$host failed with this error: $error"
-             return;
-         }
-     
-     my $data = $host->data;
-     
-     for my $oid (keys %$data) {
-             print "$host returned oid $oid with this data:\n";
-     
+       my($host, $error) = @_
+
+       if($error) {
+          warn "$host failed with this error: $error"
+          return;
+       }
+
+       my $data = $host->data;
+
+       for my $oid (keys %$data) {
+         print "$host returned oid $oid with this data:\n";
          print join "\n\t",
-                   map { "$_ => $data->{$oid}{$_}" }
-                       keys %{ $data->{$oid}{$_} };
-             print "\n";
-         }
+               map { "$_ => $data->{$oid}{$_}" }
+               keys %{ $data->{$oid}{$_} };
+         print "\n";
+       }
      }
 
 DEBUGGING
@@ -193,6 +201,7 @@ DEBUGGING
     component-name you want to change is "SNMP::Parallel", inless this
     module ins inherited.
 
+<<<<<<< HEAD:README
 NOTES
   "walk()"
     SNMP::Parallel doesn't really do a SNMP native "walk". It makes a series
@@ -214,6 +223,8 @@ NOTES
 
     Use add_method() and get_method() to manipulate this behaviour.
 
+=======
+>>>>>>> 518361c0c50839fa213ff09f102513976f3a38bb:README
 BUGS
     Please report any bugs or feature requests to "bug-snmp-parallel at
     rt.cpan.org", or through the web interface at

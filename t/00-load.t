@@ -1,9 +1,25 @@
-#!perl -T
-
-use Test::More tests => 1;
+#!perl
 
 BEGIN {
-	use_ok( 'SNMP::Parallel' );
-}
+    use File::Find;
+    use Test::More;
 
-diag( "Testing SNMP::Parallel $SNMP::Parallel::VERSION, Perl $], $^X" );
+    my $dir = './lib';
+    my @modules;
+
+    unshift @INC, $dir;
+
+    find(sub {
+        $_ = $File::Find::name;
+        if(s, ^ $dir /? (.*) \.pm $ ,$1,x) {
+            s,/,::,g;
+            push @modules, $_;
+        }
+    }, $dir);
+
+    plan tests => int(@modules);
+
+    for my $mod (@modules) {
+        use_ok($mod);
+    }
+}
