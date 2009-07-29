@@ -5,15 +5,9 @@ VERSION
     0.01_0001
 
 SYNOPSIS
-<<<<<<< HEAD:README
      use SNMP::Parallel;
      
  my $snmp = SNMP::Parallel->new(
-=======
-     use SNMP::Effective;
-
-     my $snmp = SNMP::Effective->new(
->>>>>>> 518361c0c50839fa213ff09f102513976f3a38bb:README
          max_sessions   => $NUM_POLLERS,
          master_timeout => $TIMEOUT_SECONDS,
      );
@@ -151,16 +145,16 @@ METHODS
      $class->add_snmp_callback($name, $snmp_method, sub {});
      $self->add_snmp_callback($name, $snmp_method, sub {});
 
-    Will add a callback for SNMP::Effective.
+    Will add a callback for SNMP::Parallel.
 
-    $name is what you refere to in SNMP::Effective::add():
+    $name is what you refere to in SNMP::Parallel::add():
 
      $self->add( $name => ['sysDescr'] );
 
     $snmp_method is the method which should be called on the SNMP::Session
     object.
 
-    See SNMP::Effective::Callbacks for default callbacks.
+    See SNMP::Parallel::Callbacks for default callbacks.
 
   get_host
      $host_obj = $self->get_host($hostname);
@@ -201,30 +195,6 @@ DEBUGGING
     component-name you want to change is "SNMP::Parallel", inless this
     module ins inherited.
 
-<<<<<<< HEAD:README
-NOTES
-  "walk()"
-    SNMP::Parallel doesn't really do a SNMP native "walk". It makes a series
-    of "getnext", which is almost the same as SNMP's walk.
-
-  "set()"
-    If you want to use SNMP SET, you have to build your own varbind:
-
-     $varbind = SNMP::VarBind($oid, $iid, $value, $type);
-     $parallel->add( set => $varbind );
-
-  Method map
-    This hash contains a mapping between $parallel->add($key => []),
-    "SNMP::Parallel::Dispatch::$key()" and SNMP.pm's $value method. This
-    means that you can actually add your custom method if you like.
-
-    The walk() method, is a working example on this, since it's actually a
-    series of getnext, seen from SNMP.pm's perspective.
-
-    Use add_method() and get_method() to manipulate this behaviour.
-
-=======
->>>>>>> 518361c0c50839fa213ff09f102513976f3a38bb:README
 BUGS
     Please report any bugs or feature requests to "bug-snmp-parallel at
     rt.cpan.org", or through the web interface at
