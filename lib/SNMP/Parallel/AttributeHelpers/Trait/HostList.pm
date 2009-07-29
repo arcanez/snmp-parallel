@@ -1,16 +1,16 @@
-package SNMP::Effective::AttributeHelpers::Trait::HostList;
+package SNMP::Parallel::AttributeHelpers::Trait::HostList;
 
 =head1 NAME
 
-SNMP::Effective::AttributeHelpers::Trait::HostList
+SNMP::Parallel::AttributeHelpers::Trait::HostList
 
 =cut
 
 use Moose::Role;
-use SNMP::Effective::Host;
+use SNMP::Parallel::Host;
 use Moose::Util::TypeConstraints;
 use MooseX::AttributeHelpers;
-use SNMP::Effective::AttributeHelpers::MethodProvider::HostList;
+use SNMP::Parallel::AttributeHelpers::MethodProvider::HostList;
 
 with 'MooseX::AttributeHelpers::Trait::Collection::Hash';
 
@@ -26,7 +26,7 @@ has method_provider => (
     is => 'ro',
     isa => 'ClassName',
     predicate => 'has_method_provider',
-    default => 'SNMP::Effective::AttributeHelpers::MethodProvider::HostList',
+    default => 'SNMP::Parallel::AttributeHelpers::MethodProvider::HostList',
 );
 
 =head1 METHODS
@@ -37,7 +37,7 @@ Set default options unless specified:
 
  {
    is => 'ro',
-   isa => 'HashRef[SNMP::Effective::Host]',
+   isa => 'HashRef[SNMP::Parallel::Host]',
    default => sub { [] },
  }
 
@@ -47,13 +47,13 @@ before _process_options => sub {
     my($class, $name, $options) = @_;
 
     $options->{'is'}      ||= 'ro';
-    $options->{'isa'}     ||= 'HashRef[SNMP::Effective::Host]';
+    $options->{'isa'}     ||= 'HashRef[SNMP::Parallel::Host]';
     $options->{'default'} ||= sub { {} };
 };
 
 =head1 SEE ALSO
 
-L<SNMP::Effective::AttributeHelpers::MethodProvider::VarList>
+L<SNMP::Parallel::AttributeHelpers::MethodProvider::VarList>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -61,7 +61,7 @@ L<SNMP::Effective::AttributeHelpers::MethodProvider::VarList>
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

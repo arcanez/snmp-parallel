@@ -1,12 +1,12 @@
-package SNMP::Effective::Callbacks;
+package SNMP::Parallel::Callbacks;
 
 =head1 NAME
 
-SNMP::Effective::Callbacks - Callback class for SNMP::Effective
+SNMP::Parallel::Callbacks - Callback class for SNMP::Parallel
 
 =head1 DESCRIPTION
 
-This is a helper module for L<SNMP::Effective>
+This is a helper module for L<SNMP::Parallel>
 
 =cut
 
@@ -30,7 +30,7 @@ sub set {
     return $self->_end($host, 'Timeout') unless(ref $response);
 
     for my $r (grep { ref $_ } @$response) {
-        my $cur_oid = SNMP::Effective::make_numeric_oid($r->name);
+        my $cur_oid = SNMP::Parallel::make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
@@ -55,7 +55,7 @@ sub get {
     return $self->_end($host, 'Timeout') unless(ref $response);
 
     for my $r (grep { ref $_ } @$response) {
-        my $cur_oid = SNMP::Effective::make_numeric_oid($r->name);
+        my $cur_oid = SNMP::Parallel::make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
@@ -80,7 +80,7 @@ sub getnext {
     return $self->_end($host, 'Timeout') unless(ref $response);
 
     for my $r (grep { ref $_ } @$response) {
-        my $cur_oid = SNMP::Effective::make_numeric_oid($r->name);
+        my $cur_oid = SNMP::Parallel::make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
@@ -110,13 +110,13 @@ sub walk {
         my $splice = 2;
 
         if(my $r = $response->[$i]) {
-            my($cur_oid, $ref_oid) = SNMP::Effective::make_numeric_oid(
+            my($cur_oid, $ref_oid) = SNMP::Parallel::make_numeric_oid(
                                          $r->name, $request->[$i]->name
                                      );
             $r->[0] = $cur_oid;
             $splice--;
 
-            if(defined SNMP::Effective::match_oid($cur_oid, $ref_oid)) {
+            if(defined SNMP::Parallel::match_oid($cur_oid, $ref_oid)) {
                 $host->set_data($r, $ref_oid);
                 $splice--;
                 $i++;
@@ -146,7 +146,7 @@ sub walk {
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

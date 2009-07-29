@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-	use_ok( 'SNMP::Effective' );
+	use_ok( 'SNMP::Parallel' );
 }
 
-diag( "Testing SNMP::Effective $SNMP::Effective::VERSION, Perl $], $^X" );
+diag( "Testing SNMP::Parallel $SNMP::Parallel::VERSION, Perl $], $^X" );

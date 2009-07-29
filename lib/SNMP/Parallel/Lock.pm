@@ -1,8 +1,8 @@
-package SNMP::Effective::Lock;
+package SNMP::Parallel::Lock;
 
 =head1 NAME
 
-SNMP::Effective::Lock - A role for locking
+SNMP::Parallel::Lock - A role for locking
 
 =head1 SYNOPSIS
 
@@ -75,7 +75,7 @@ Sigurd Weisteen Larsen contributed with a better locking mechanism.
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>
+See L<SNMP::Parallel>
 
 =cut
 

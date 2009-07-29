@@ -1,18 +1,18 @@
-package SNMP::Effective;
+package SNMP::Parallel;
 
 =head1 NAME
 
-SNMP::Effective - An effective SNMP-information-gathering module
+SNMP::Parallel - An effective SNMP-information-gathering module
 
 =head1 VERSION
 
-This document refers to version 1.99_001 of SNMP::Effective.
+0.01_0001
 
 =head1 SYNOPSIS
 
- use SNMP::Effective;
+ use SNMP::Parallel;
  
- my $snmp = SNMP::Effective->new(
+ my $snmp = SNMP::Parallel->new(
      max_sessions   => $NUM_POLLERS,
      master_timeout => $TIMEOUT_SECONDS,
  );
@@ -54,7 +54,7 @@ making operations far quicker. Note that this does not use threads.
 
 =item It's fast
 
-To give one example, C<SNMP::Effective> can walk, say, eight indexed OIDs
+To give one example, C<SNMP::Parallel> can walk, say, eight indexed OIDs
 (port status, errors, traffic, etc) for around 300 devices (that's 8500 ports)
 in under 30 seconds. Storage of that data might take an additional 10 seconds
 (depending on whether it's to RAM or disk). This makes polling/monitoring your
@@ -79,10 +79,10 @@ The method arguments are very flexible. Any of the below acts as the same:
 use Moose;
 use MooseX::AttributeHelpers;
 use SNMP;
-use SNMP::Effective::AttributeHelpers::Trait::HostList;
+use SNMP::Parallel::AttributeHelpers::Trait::HostList;
 use Log::Log4perl;
 
-with qw/SNMP::Effective::Role SNMP::Effective::Lock/;
+with qw/SNMP::Parallel::Role SNMP::Parallel::Lock/;
 
 our $VERSION = '1.99_001';
 
@@ -169,7 +169,7 @@ has _method_map => (
 );
 
 has _hostlist => (
-    traits => [qw/SNMP::Effective::AttributeHelpers::Trait::HostList/],
+    traits => [qw/SNMP::Parallel::AttributeHelpers::Trait::HostList/],
     provides => {
         set => 'add_host',
         get => 'get_host',
@@ -499,13 +499,13 @@ example of a callback method:
 
 Debugging is enabled through Log::Log4perl. If nothing else is spesified,
 it will default to "error" level, and print to STDERR. The component-name
-you want to change is "SNMP::Effective", inless this module ins inherited.
+you want to change is "SNMP::Parallel", inless this module ins inherited.
 
 =head1 NOTES
 
 =head2 C<walk()>
 
-SNMP::Effective doesn't really do a SNMP native "walk". It makes a series
+SNMP::Parallel doesn't really do a SNMP native "walk". It makes a series
 of "getnext", which is almost the same as SNMP's walk.
 
 =head2 C<set()>
@@ -513,12 +513,12 @@ of "getnext", which is almost the same as SNMP's walk.
 If you want to use SNMP SET, you have to build your own varbind:
 
  $varbind = SNMP::VarBind($oid, $iid, $value, $type);
- $effective->add( set => $varbind );
+ $parallel->add( set => $varbind );
 
 =head2 Method map
 
-This hash contains a mapping between $effective->add($key => []),
-C<SNMP::Effective::Dispatch::$key()> and L<SNMP>.pm's C<$value> method.
+This hash contains a mapping between $parallel->add($key => []),
+C<SNMP::Parallel::Dispatch::$key()> and L<SNMP>.pm's C<$value> method.
 This means that you can actually add your custom method if you like.
 
 The L<walk()> method, is a working example on this, since it's actually
@@ -529,8 +529,8 @@ Use L<add_method()> and L<get_method()> to manipulate this behaviour.
 =head1 BUGS
 
 Please report any bugs or feature requests to
-C<bug-snmp-effective at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SNMP-Effective>.
+C<bug-snmp-parallel at rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SNMP-Parallel>.
 I will be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
 

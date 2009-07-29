@@ -1,13 +1,13 @@
-package SNMP::Effective::AttributeHelpers::MethodProvider::VarList;
+package SNMP::Parallel::AttributeHelpers::MethodProvider::VarList;
 
 =head1 NAME
 
-SNMP::Effective::AttributeHelpers::MethodProvider::VarList
+SNMP::Parallel::AttributeHelpers::MethodProvider::VarList
 
 =head1 DESCRIPTION
 
 This module does the role
-L<SNMP::Effective::AttributeHelpers::MethodProvider::Array>.
+L<SNMP::Parallel::AttributeHelpers::MethodProvider::Array>.
 
 =cut
 
@@ -81,7 +81,7 @@ sub push : method {
 
 =head1 SEE ALSO
 
-L<SNMP::Effective::AttributeHelpers::Trait::VarList>
+L<SNMP::Parallel::AttributeHelpers::Trait::VarList>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -89,7 +89,7 @@ L<SNMP::Effective::AttributeHelpers::Trait::VarList>
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 

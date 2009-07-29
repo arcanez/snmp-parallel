@@ -1,13 +1,13 @@
 NAME
-    SNMP::Effective - An effective SNMP-information-gathering module
+    SNMP::Parallel - An effective SNMP-information-gathering module
 
 VERSION
-    This document refers to version 1.99_001 of SNMP::Effective.
+    0.01_0001
 
 SYNOPSIS
-     use SNMP::Effective;
+     use SNMP::Parallel;
      
- my $snmp = SNMP::Effective->new(
+ my $snmp = SNMP::Parallel->new(
          max_sessions   => $NUM_POLLERS,
          master_timeout => $TIMEOUT_SECONDS,
      );
@@ -44,7 +44,7 @@ DESCRIPTION
         threads.
 
     It's fast
-        To give one example, "SNMP::Effective" can walk, say, eight indexed
+        To give one example, "SNMP::Parallel" can walk, say, eight indexed
         OIDs (port status, errors, traffic, etc) for around 300 devices
         (that's 8500 ports) in under 30 seconds. Storage of that data might
         take an additional 10 seconds (depending on whether it's to RAM or
@@ -190,23 +190,23 @@ The callback method
 DEBUGGING
     Debugging is enabled through Log::Log4perl. If nothing else is
     spesified, it will default to "error" level, and print to STDERR. The
-    component-name you want to change is "SNMP::Effective", inless this
+    component-name you want to change is "SNMP::Parallel", inless this
     module ins inherited.
 
 NOTES
   "walk()"
-    SNMP::Effective doesn't really do a SNMP native "walk". It makes a
-    series of "getnext", which is almost the same as SNMP's walk.
+    SNMP::Parallel doesn't really do a SNMP native "walk". It makes a series
+    of "getnext", which is almost the same as SNMP's walk.
 
   "set()"
     If you want to use SNMP SET, you have to build your own varbind:
 
      $varbind = SNMP::VarBind($oid, $iid, $value, $type);
-     $effective->add( set => $varbind );
+     $parallel->add( set => $varbind );
 
   Method map
-    This hash contains a mapping between $effective->add($key => []),
-    "SNMP::Effective::Dispatch::$key()" and SNMP.pm's $value method. This
+    This hash contains a mapping between $parallel->add($key => []),
+    "SNMP::Parallel::Dispatch::$key()" and SNMP.pm's $value method. This
     means that you can actually add your custom method if you like.
 
     The walk() method, is a working example on this, since it's actually a
@@ -215,9 +215,9 @@ NOTES
     Use add_method() and get_method() to manipulate this behaviour.
 
 BUGS
-    Please report any bugs or feature requests to "bug-snmp-effective at
+    Please report any bugs or feature requests to "bug-snmp-parallel at
     rt.cpan.org", or through the web interface at
-    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SNMP-Effective>. I will
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=SNMP-Parallel>. I will
     be notified, and then you'll automatically be notified of progress on
     your bug as I make changes.
 

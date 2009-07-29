@@ -1,13 +1,13 @@
-package SNMP::Effective::Role;
+package SNMP::Parallel::Role;
 
 =head1 NAME
 
-SNMP::Effective::Role - Common attributes and methods
+SNMP::Parallel::Role - Common attributes and methods
 
 =head1 SYNOPSIS
 
  package Foo;
- with SNMP::Effective::Role;
+ with SNMP::Parallel::Role;
  #...
  1;
 
@@ -75,7 +75,7 @@ has callback => (
 );
 
 has _varlist => (
-    traits => [qw/SNMP::Effective::AttributeHelpers::Trait::VarList/],
+    traits => [qw/SNMP::Parallel::AttributeHelpers::Trait::VarList/],
     provides => {
         push => 'add_varlist',
         shift => 'shift_varbind',
@@ -105,7 +105,7 @@ Return one $varbind object.
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>
+See L<SNMP::Parallel>
 
 =cut
 

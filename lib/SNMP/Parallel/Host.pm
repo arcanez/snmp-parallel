@@ -1,13 +1,13 @@
-package SNMP::Effective::Host;
+package SNMP::Parallel::Host;
 
 =head1 NAME
 
-SNMP::Effective::Host - Helper module for SNMP::Effective
+SNMP::Parallel::Host - Helper module for SNMP::Parallel
 
 =head1 DESCRIPTION
 
-This is a helper module for SNMP::Effective. It does the role
-L<SNMP::Effective::Role>.
+This is a helper module for SNMP::Parallel. It does the role
+L<SNMP::Parallel::Role>.
 
 =cut
 
@@ -22,7 +22,7 @@ use overload (
     fallback => 1,
 );
 
-with 'SNMP::Effective::Role';
+with 'SNMP::Parallel::Role';
 
 =head1 OBJECT ATTRIBUTES
 
@@ -151,7 +151,7 @@ sub set_data {
     my $self = shift;
     my $r    = shift or return;
     my $ref  = shift || q(.);
-    my $iid  = $r->[1] || SNMP::Effective::match_oid($r->[0], $ref) || 1;
+    my $iid  = $r->[1] || SNMP::Parallel::match_oid($r->[0], $ref) || 1;
 
     $self->data->{$ref}{$iid} = $r->[2];
     $self->type->{$ref}{$iid} = $r->[3];
@@ -204,7 +204,7 @@ sub _check_errno {
 
 =head1 AUTHOR
 
-See L<SNMP::Effective>.
+See L<SNMP::Parallel>.
 
 =cut
 
