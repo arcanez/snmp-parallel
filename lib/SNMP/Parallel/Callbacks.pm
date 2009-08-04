@@ -42,7 +42,7 @@ SNMP::Parallel->add_snmp_callback(set => set => sub {
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
-        $host->set_data($r, $cur_oid);
+        $host->add_result($r, $cur_oid);
     }
 
     return '';
@@ -62,7 +62,7 @@ SNMP::Parallel->add_snmp_callback(get => get => sub {
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
-        $host->set_data($r, $cur_oid);
+        $host->add_result($r, $cur_oid);
     }
 
     return '';
@@ -82,7 +82,7 @@ SNMP::Parallel->add_snmp_callback(getnext => getnext => sub {
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
-        $host->set_data($r, $cur_oid);
+        $host->add_result($r, $cur_oid);
     }
 
     return '';
@@ -114,7 +114,7 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
             $splice--;
 
             if(defined match_oid($cur_oid, $ref_oid)) {
-                $host->set_data($r, $ref_oid);
+                $host->add_result($r, $ref_oid);
                 $splice--;
                 $i++;
             }

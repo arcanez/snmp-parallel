@@ -111,7 +111,7 @@ Return one $varbind object.
 =head2 log
 
  $bool = $self->log($level, $format, @args);
- $bool = $self->log->$level($msg);
+ $bool = $self->log->$foo(...);
 
 Will log using L<Log::Log4perl>.
 

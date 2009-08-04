@@ -13,6 +13,7 @@ L<SNMP::Parallel::Role>.
 
 use Moose;
 use SNMP;
+use SNMP::Parallel::Result;
 use POSIX qw/:errno_h/;
 use overload (
     q("")  => sub { shift->address },
@@ -73,50 +74,34 @@ sub _build_session {
     }
 }
 
-=head2 data
+=head2 results
 
- $hash_ref = $self->data;
+ $hash_ref = $self->results;
+ $self->clear_results;
+ $self->add_result(...);
 
-Get the retrieved data:
+Get the retrieved SNMP results:
 
  {
    $oid => {
-     $iid => $value,
+     $iid => $result_object,
      ...,
    },
    ...,
  }
 
-=cut
-
-has data => (
-    is => 'ro',
-    isa => 'HashRef',
-    default => sub { {} },
-    clearer => '_clear_data',
-);
-
-=head2 type
-
- $hash_ref = $self->type;
-
-Get SNMP type.
-
- {
-   $oid => {
-     $iid => $type,
-     ...,
-   },
-   ...,
- }
+See L<SNMP::Parallel::Result>. for the api for the stored object.
+See L<SNMP::Parallel::AttributeHelpers::MethodProvider::Result> for the
+different ways to use C<add_result(...)>.
 
 =cut
 
-has type => (
-    is => 'ro',
-    isa => 'HashRef',
-    default => sub { {} },
-    clearer => '_clear_type',
+has results => (
+    traits => [qw/SNMP::Parallel::AttributeHelpers::Trait::Result/],
+    clearer => 'clear_results',
+    provides => {
+        set => 'add_result',
+    },
 );
 
 =head2 fatal
@@ -156,40 +141,6 @@ sub BUILD {
     if(my $varlist = $args->{'varlist'}) {
         $self->add_varlist(@$varlist);
     }
-}
-
-=head2 set_data
-
- $bool = $self->set_data([$oid, $iid, $value, $type], $ref_oid);
-
-C<$iid> and C<$ref_oid> can be undef.
-
-=cut
-
-sub set_data {
-    my $self = shift;
-    my $r    = shift or return;
-    my $ref  = shift || q(.);
-    my $iid  = $r->[1] || SNMP::Parallel::match_oid($r->[0], $ref) || 1;
-
-    $self->data->{$ref}{$iid} = $r->[2];
-    $self->type->{$ref}{$iid} = $r->[3];
-
-    return 1;
-}
-
-=head2 clear_data
-
- $self->clear_data;
-
-Remove data from the host cache
-
-=cut
-
-sub clear_data {
-    $_[0]->_clear_data;
-    $_[0]->_clear_type;
-    return;
 }
 
 # ($retry, $reason) = _check_errno;
