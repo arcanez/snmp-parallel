@@ -6,12 +6,7 @@ SNMP::Parallel::Callbacks - SNMP callbacks
 
 =head1 SYNOPSIS
 
- use SNMP::Parallel;
-
- my $effective = SNMP::Parallel->new;
-
- # $name is one of the callbacks in this package
- $effective->add($name => $varlist);
+See L<SNMP::Parallel>.
 
 =head1 DESCRIPTION
 
@@ -43,14 +38,14 @@ If you want to use SNMP SET, you have to build your own varbind:
 SNMP::Parallel->add_snmp_callback(set => set => sub {
     my($self, $host, $req, $res) = @_;
 
-    return $self->_end($host, 'Timeout') unless(ref $res);
+    return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
-    return $self->_end($host);
+    return '';
 });
 
 =head2 get
@@ -63,14 +58,14 @@ on the C<$host>.
 SNMP::Parallel->add_snmp_callback(get => get => sub {
     my($self, $host, $req, $res) = @_;
 
-    return $self->_end($host, 'Timeout') unless(ref $res);
+    return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
-    return $self->_end($host);
+    return '';
 });
 
 =head2 getnext
@@ -83,14 +78,14 @@ on the C<$host>.
 SNMP::Parallel->add_snmp_callback(getnext => getnext => sub {
     my($self, $host, $req, $res) = @_;
 
-    return $self->_end($host, 'Timeout') unless(ref $res);
+    return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
         my $cur_oid = make_numeric_oid($r->name);
         $host->set_data($r, $cur_oid);
     }
 
-    return $self->_end($host);
+    return '';
 });
 
 =head2 walk
@@ -105,7 +100,7 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     my($self, $host, $req, $res) = @_;
     my $i = 0;
 
-    return $self->_end($host, 'Timeout') unless(ref $res);
+    return 'timeout' unless(ref $res);
 
     while($i < @$res) {
         my $splice = 2;
@@ -132,11 +127,11 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     }
 
     if(@$res) {
-        $$host->getnext($res, [ \&_walk, $self, $host, $req ]);
+        $$host->getnext($res, [ 'walk', $self, $host, $req ]);
         return;
     }
     else {
-        return $self->_end($host);
+        return '';
     }
 });
 
