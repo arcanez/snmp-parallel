@@ -64,6 +64,13 @@ METHODS ARGUMENTS
      $obj->method(My_Key  => $value);
      $obj->method(mYK__EY => $value);
 
+SEE ALSO
+    This module does SNMP::Parallel::Role and SNMP::Parallel::Lock.
+
+    It is a fork of SNMP::Effective. This is built on Moose and has a
+    slightly better interface. Unfortunatly it's not 100% compatible with
+    SNMP::Effective so it had to get a new name.
+
 OBJECT ATTRIBUTES
   master_timeout
      $seconds = $self->master_timeout;
@@ -178,7 +185,7 @@ The callback method
           return;
        }
 
-       my $data = $host->data;
+       my $data = $host->results;
 
        for my $oid (keys %$data) {
          print "$host returned oid $oid with this data:\n";
