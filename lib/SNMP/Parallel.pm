@@ -75,6 +75,14 @@ The method arguments are very flexible. Any of the below acts as the same:
  $obj->method(My_Key  => $value);
  $obj->method(mYK__EY => $value);
 
+=head1 SEE ALSO
+
+This module does L<SNMP::Parallel::Role> and L<SNMP::Parallel::Lock>.
+
+It is a fork of L<SNMP::Effective>. This is built on L<Moose> and has a
+slightly better interface. Unfortunatly it's not 100% compatible with
+L<SNMP::Effective> so it had to get a new name.
+
 =cut
 
 use Moose -traits => 'SNMP::Parallel::Meta::Role';
@@ -85,7 +93,8 @@ with qw/SNMP::Parallel::Role SNMP::Parallel::Lock/;
 # load default callbacks
 require SNMP::Parallel::Callbacks;
 
-our $VERSION = '1.99_001';
+our $VERSION = '0.01_001';
+my $around_cb_sub;
 
 =head1 OBJECT ATTRIBUTES
 
@@ -244,7 +253,9 @@ sub add {
     my $self = shift;
     my $in   = $self->BUILDARGS(@_) or return;
 
-    local $in->{'varlist'}; # don't mangle input
+    # don't mangle input
+    local $in->{'dest_host'} = $in->{'dest_host'};
+    local $in->{'varlist'}; 
 
     # setup host
     if($in->{'dest_host'}) {
@@ -262,7 +273,7 @@ sub add {
         }
     }
 
-    # add
+    # add/modify hosts
     if(ref $in->{'dest_host'} eq 'ARRAY') {
         $in->{'varlist'} ||= $self->_varlist;
 
@@ -296,7 +307,7 @@ sub add {
         }
     }
 
-    # update
+    # add/update main object
     else {
         $self->log(debug => 'Update main object: %s', $in);
         $self->add_varlist(@{$in->{'varlist'}}) if($in->{'varlist'});
@@ -351,7 +362,7 @@ sub execute {
     return 1;
 }
 
-# called from execute() or _end()
+# called from execute()
 sub _dispatch {
     my $self = shift;
     my $host = shift;
@@ -375,7 +386,7 @@ sub _dispatch {
             $self->_inc_sessions;
         }
         unless($host->session) {
-            # $host->fatal is set
+            # $host->fatal is set inside session()
             next HOST;
         }
 
@@ -390,7 +401,6 @@ sub _dispatch {
             );
         }
 
-        # something went wrong
         if($req_id) {
             $self->log(trace => "%s request %s", "$host", $request->[0]);
         }
@@ -401,7 +411,7 @@ sub _dispatch {
     }
     continue {
         if($req_id or !@$host) {
-            $host = undef;
+            $host = undef; # done
         }
         elsif($host->fatal) {
             $self->log(error => '%s failed: %s', "$host", $host->fatal);
@@ -423,19 +433,6 @@ sub _dispatch {
     return $self->hosts || $self->sessions;
 }
 
-# called from inside a dispatch callback
-sub _end {
-    my $self  = shift;
-    my $host  = shift;
-    my $error = shift;
-
-    $self->log(debug => 'Callback for %s...', $host);
-    $host->($host, $error);
-    $host->clear_data;
-
-    return $self->_dispatch($host)
-}
-
 =head2 add_snmp_callback
 
  $class->add_snmp_callback($name, $snmp_method, sub {});
@@ -454,15 +451,43 @@ See L<SNMP::Parallel::Callbacks> for default callbacks.
 
 =cut
 
+BEGIN {
+    # need to be set in BEGIN{}, unless it will be undef on compile time
+    # called from SNMP.pm
+    # $around_cb_sub->($self, $host, $req, $res);
+    $around_cb_sub = sub {
+        my $next  = shift;
+        my $self  = shift;
+        my $host  = $_[0];
+        my $error = $self->$next(@_);
+
+        # special case to enable a callback to call itself
+        # see SNMP::Parallel::Callbacks::walk() for example
+        # this means that q() = no error
+        unless(defined $error) {
+            return;
+        }
+
+        $self->log(debug => 'Callback for %s...', $host);
+        $host->($host, $error);
+        $host->clear_data;
+
+        return $self->_dispatch($host);
+    };
+}
+
 sub add_snmp_callback {
     my($self, $name, $snmp_method, $sub) = @_;
+    my $meta = $self->meta;
+    my $callback_name = "_cb_$name";
 
     unless(SNMP::Session->can($snmp_method)) {
         Carp::confess("SNMP.pm cannot '$snmp_method'");
     }
 
-    $self->meta->add_method("_cb_$name" => $sub);
-    $self->meta->snmp_callback_map->{$name} = $snmp_method;
+    $meta->snmp_callback_map->{$name} = $snmp_method;
+    $meta->add_method($callback_name => $sub);
+    $meta->add_around_method_modifier($callback_name => $around_cb_sub);
 }
 
 =head2 get_host
