@@ -470,7 +470,7 @@ BEGIN {
 
         $self->log(debug => 'Callback for %s...', $host);
         $host->($host, $error);
-        $host->clear_data;
+        $host->clear_results;
 
         return $self->_dispatch($host);
     };
@@ -516,7 +516,7 @@ example of a callback method:
       return;
    }
 
-   my $data = $host->data;
+   my $data = $host->results;
 
    for my $oid (keys %$data) {
      print "$host returned oid $oid with this data:\n";
