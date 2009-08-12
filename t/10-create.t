@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use lib qw(./lib);
 use Log::Log4perl qw(:easy);
-use Test::More tests => 20;
+use Test::More tests => 14;
 
 BEGIN {
     use_ok( 'SNMP::Parallel' );
@@ -55,17 +55,3 @@ ok($req = shift @$host, "second default request defined");
 is($req->[0], "getnext", "second default method is ok");
 is_deeply($host->heap, { foo => 42 }, "default heap is set");
 
-# dispatcher
-push @host, '10.1.1.3';
-$parallel->add(dest_host => \@host);
-ok($parallel->_dispatch, "dispatcher set up hosts");
-is($parallel->sessions, $max_sessions, "correct number of sessions");
-
-
-{
-    no warnings 'redefine';
-    *SNMP::Session::new = sub { undef };
-    $host->clear_session;
-    ok(!$host->session, "session is undef");
-    like($host->fatal, qr{resolve hostname}, "session guesswork error is ok");
-}
