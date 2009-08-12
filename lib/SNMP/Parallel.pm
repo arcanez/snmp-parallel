@@ -482,7 +482,7 @@ sub add_snmp_callback {
     my $callback_name = "_cb_$name";
 
     unless(SNMP::Session->can($snmp_method)) {
-        Carp::confess("SNMP.pm cannot '$snmp_method'");
+        confess("SNMP::Session cannot '$snmp_method'");
     }
 
     $meta->snmp_callback_map->{$name} = $snmp_method;
