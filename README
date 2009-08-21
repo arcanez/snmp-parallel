@@ -2,7 +2,13 @@ NAME
     SNMP::Parallel - An effective SNMP-information-gathering module
 
 VERSION
-    0.01_0001
+    0.00_0001
+
+DISCLAIMER
+    THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY!
+
+    Please post any feedback and bug reports to "bug-snmp-parallel at
+    rt.cpan.org".
 
 SYNOPSIS
      use SNMP::Parallel;
@@ -221,5 +227,5 @@ COPYRIGHT & LICENSE
     under the same terms as Perl itself.
 
 AUTHOR
-    Jan Henning Thorsen, "<pm at flodhest.net>"
+    Jan Henning Thorsen, "<jhthorse at cpan.org>"
 

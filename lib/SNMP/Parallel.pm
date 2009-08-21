@@ -6,7 +6,14 @@ SNMP::Parallel - An effective SNMP-information-gathering module
 
 =head1 VERSION
 
-0.01_0001
+0.00_0001
+
+=head1 DISCLAIMER
+
+THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY!
+
+Please post any feedback and bug reports to
+C<bug-snmp-parallel at rt.cpan.org>.
 
 =head1 SYNOPSIS
 
@@ -93,7 +100,7 @@ with qw/SNMP::Parallel::Role SNMP::Parallel::Lock/;
 # load default callbacks
 require SNMP::Parallel::Callbacks;
 
-our $VERSION = '0.01_001';
+our $VERSION = '0.00_001';
 my $around_cb_sub;
 
 =head1 OBJECT ATTRIBUTES
@@ -556,7 +563,7 @@ under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-Jan Henning Thorsen, C<< <pm at flodhest.net> >>
+Jan Henning Thorsen, C<< <jhthorse at cpan.org> >>
 
 =cut
 
