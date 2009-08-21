@@ -31,10 +31,6 @@ has snmp_callback_map => (
     default => sub { {} },
 );
 
-=head1 BUGS
-
-=head1 ACKNOWLEDGEMENTS
-
 =head1 COPYRIGHT & LICENSE
 
 =head1 AUTHOR

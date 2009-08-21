@@ -69,6 +69,8 @@ has iid => (
     required => 1,
 );
 
+=head1 
+
 =head1 AUTHOR
 
 See L<SNMP::Paralell>.

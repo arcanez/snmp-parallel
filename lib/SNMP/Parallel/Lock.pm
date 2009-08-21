@@ -69,8 +69,6 @@ sub unlock {
 
 Sigurd Weisteen Larsen contributed with a better locking mechanism.
 
-=head1 BUGS
-
 =head1 COPYRIGHT & LICENSE
 
 =head1 AUTHOR

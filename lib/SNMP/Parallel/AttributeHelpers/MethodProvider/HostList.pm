@@ -2,7 +2,7 @@ package SNMP::Parallel::AttributeHelpers::MethodProvider::HostList;
 
 =head1 NAME
 
-SNMP::Parallel::AttributeHelpers::MethodProvider::HostList
+SNMP::Parallel::AttributeHelpers::MethodProvider::HostList - Attribute helper methods
 
 =head1 DESCRIPTION
 
@@ -74,8 +74,6 @@ sub shift : method {
 =head1 SEE ALSO
 
 L<SNMP::Parallel::AttributeHelpers::Trait::VarList>
-
-=head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 

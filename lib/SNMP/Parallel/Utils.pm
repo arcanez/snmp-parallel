@@ -100,10 +100,6 @@ sub make_name_oid {
 
 }
 
-=head1 BUGS
-
-=head1 ACKNOWLEDGEMENTS
-
 =head1 COPYRIGHT & LICENSE
 
 =head1 AUTHOR

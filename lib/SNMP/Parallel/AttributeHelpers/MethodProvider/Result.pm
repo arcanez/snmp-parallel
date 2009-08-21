@@ -2,7 +2,7 @@ package SNMP::Parallel::AttributeHelpers::MethodProvider::Result;
 
 =head1 NAME
 
-SNMP::Parallel::AttributeHelpers::MethodProvider::Result
+SNMP::Parallel::AttributeHelpers::MethodProvider::Result - Attribute helper methods
 
 =head1 DESCRIPTION
 
@@ -70,8 +70,6 @@ sub set : method {
 =head1 SEE ALSO
 
 L<SNMP::Parallel::AttributeHelpers::Trait::VarList>
-
-=head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 
