@@ -2,7 +2,7 @@ package SNMP::Parallel::Host;
 
 =head1 NAME
 
-SNMP::Parallel::Host - Helper module for SNMP::Parallel
+SNMP::Parallel::Host - SNMP::Parallel host class
 
 =head1 DESCRIPTION
 
@@ -167,8 +167,6 @@ sub _check_errno {
 
     return $retry, $string;
 }
-
-=head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 

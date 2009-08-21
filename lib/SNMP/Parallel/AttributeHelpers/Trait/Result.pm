@@ -2,7 +2,7 @@ package SNMP::Parallel::AttributeHelpers::Trait::Result;
 
 =head1 NAME
 
-SNMP::Parallel::AttributeHelpers::Trait::Result
+SNMP::Parallel::AttributeHelpers::Trait::Result - Attribute helper
 
 =cut
 
@@ -53,8 +53,6 @@ before _process_options => sub {
 =head1 SEE ALSO
 
 L<SNMP::Parallel::AttributeHelpers::MethodProvider::VarList>
-
-=head1 ACKNOWLEDGEMENTS
 
 =head1 COPYRIGHT & LICENSE
 

@@ -141,10 +141,6 @@ sub log {
     return $self->_log->$level(sprintf $format, @args);
 }
 
-=head1 BUGS
-
-=head1 ACKNOWLEDGEMENTS
-
 =head1 COPYRIGHT & LICENSE
 
 =head1 AUTHOR
