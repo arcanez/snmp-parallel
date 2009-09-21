@@ -11,7 +11,7 @@ use Moose::Util::TypeConstraints;
 use MooseX::AttributeHelpers;
 use SNMP::Parallel::AttributeHelpers::MethodProvider::Result;
 
-with 'MooseX::AttributeHelpers::Trait::Collection::Hash';
+with 'MooseX::AttributeHelpers::Trait::Collection::Array';
 
 =head1 ATTRIBUTES
 
@@ -36,7 +36,7 @@ Set default options unless specified:
 
  {
    is => 'ro',
-   isa => 'HashRef',
+   isa => 'ArrayRef',
    default => sub { [] },
  }
 
@@ -46,8 +46,8 @@ before _process_options => sub {
     my($class, $name, $options) = @_;
 
     $options->{'is'}      ||= 'ro';
-    $options->{'isa'}     ||= 'HashRef';
-    $options->{'default'} ||= sub { {} };
+    $options->{'isa'}     ||= 'ArrayRef';
+    $options->{'default'} ||= sub { [] };
 };
 
 =head1 SEE ALSO

@@ -12,64 +12,49 @@ L<SNMP::Parallel::AttributeHelpers::MethodProvider::Hash>.
 =cut
 
 use Moose::Role;
-use SNMP::Parallel qw/match_oid/;
+use SNMP::Parallel::Utils qw/match_oid/;
 use SNMP::Parallel::Result;
 
-with 'MooseX::AttributeHelpers::MethodProvider::Hash';
+with 'MooseX::AttributeHelpers::MethodProvider::Array';
 
 =head1 METHODS
 
-=head2 set
+=head2 push
 
- $code = $attribute->set($reader, $writer);
- $result_obj = $self->$code(\%args);
- $result_obj = $self->$code(\@snmp_result, $ref_oid);
- $result_obj = $self->$code($result_obj);
+ $code = $attribute->push($reader, $writer);
+ $int = $self->$code([\%args, $ref_oid], [...]);
+ $int = $self->$code([\@snmp_result, $ref_oid], [...]);
+ $int = $self->$code([$snmp_varbind, $ref_oid], [...]);
+ $int = $self->$code([$result_obj, $ref_oid], [...]);
 
 Add a new L<SNMP::Parallel::Result> object to list.
 
 =cut
 
-sub set : method {
+sub push : method {
     my($attr, $reader, $writer) = @_;
-    my $super = MooseX::AttributeHelpers::MethodProvider::Hash::set(@_);
 
     return sub {
         my $self = shift;
 
-        if(ref $_[0] eq 'ARRAY') {
-            my $r   = $_[0];
-            my $ref = $_[1] || q(.);
-            my $iid = $r->[1] || match_oid($r->[0], $ref) || 1;
-
-            return $super->($self, $_[0] => {
-                $iid => SNMP::Parallel::Result->new({
-                    value => $r->[2],
-                    type => $->[3],
-                    oid => $r->[0],
-                    iid => $iid,
-                }),
-            });
-        }
-        elsif(ref $_[0] eq 'HASH') {
-            my $oid = $_[0]->{'oid'};
-            my $iid = $_[0]->{'iid'};
-            return $super->($self,
-                $oid => { $iid => SNMP::Parallel::Result->new($_[0]) }
+        if(UNIVERSAL::isa($_[0], 'ARRAY')) {
+            return(push @{ $reader->($self) },
+                SNMP::Parallel::Result->new(
+                    tag => $_[0]->tag,
+                    iid => $_[0]->iid,
+                    value => $_[0]->val,
+                    type => $_[0]->type,
+                    name => $_[0]->name,
+                    _req => $_[1],
+                )
             );
-        }
-        elsif(blessed $_[0])  {
-            return $super->($self, $_[0]->oid => { $_[0]->iid => $_[0] });
-        }
-        else {
-            confess "Unknown input: @_";
         }
     };
 }
 
 =head1 SEE ALSO
 
-L<SNMP::Parallel::AttributeHelpers::Trait::VarList>
+L<SNMP::Parallel::AttributeHelpers::Trait::Result>
 
 =head1 COPYRIGHT & LICENSE
 
