@@ -46,6 +46,7 @@ sub push : method {
                     value => $_[0]->val,
                     type => $_[0]->type,
                     name => $_[0]->name,
+                    callback => $SNMP::Parallel::CURRENT_CALLBACK_NAME,
                     _req => $_[1],
                 )
             );

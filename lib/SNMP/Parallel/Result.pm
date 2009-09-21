@@ -55,6 +55,20 @@ has type => (
     required => 1,
 );
 
+=head2 callback
+
+ $str = $self->callback;
+ 
+Name of the callback that added this result.
+
+=cut
+
+has callback => (
+    is => 'ro',
+    isa => 'Str',
+    required => 1,
+);
+
 has _req => (
     is => 'ro',
     isa => 'SNMP::Varbind',
