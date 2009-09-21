@@ -41,8 +41,7 @@ SNMP::Parallel->add_snmp_callback(set => set => sub {
     return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
-        my $cur_oid = make_numeric_oid($r->name);
-        $host->add_result($r, $cur_oid);
+        $host->add_result($r, $req);
     }
 
     return '';
@@ -61,8 +60,7 @@ SNMP::Parallel->add_snmp_callback(get => get => sub {
     return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
-        my $cur_oid = make_numeric_oid($r->name);
-        $host->add_result($r, $cur_oid);
+        $host->add_result($r, $req);
     }
 
     return '';
@@ -81,8 +79,7 @@ SNMP::Parallel->add_snmp_callback(getnext => getnext => sub {
     return 'timeout' unless(ref $res);
 
     for my $r (grep { ref $_ } @$res) {
-        my $cur_oid = make_numeric_oid($r->name);
-        $host->add_result($r, $cur_oid);
+        $host->add_result($r, $req);
     }
 
     return '';
@@ -114,7 +111,7 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
             $splice--;
 
             if(defined match_oid($cur_oid, $ref_oid)) {
-                $host->add_result($r, $ref_oid);
+                $host->add_result($r, $req);
                 $splice--;
                 $i++;
             }
@@ -127,7 +124,7 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     }
 
     if(@$res) {
-        $$host->getnext($res, [ 'walk', $self, $host, $req ]);
+        $$host->getnext($req, [ '&callback_walk' => $self, $host, $req ]);
         return;
     }
     else {
