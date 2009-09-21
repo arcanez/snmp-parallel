@@ -380,11 +380,6 @@ sub _dispatch {
 
     $self->wait_for_lock;
 
-    if($host and @$host == 0) {
-        $self->log(info => '%s complete', "$host");
-        $self->_dec_sessions;
-    }
-
     HOST:
     while($self->sessions < $self->max_sessions or $host) {
         $host      ||= $self->_shift_host   or last HOST;
@@ -412,24 +407,20 @@ sub _dispatch {
                 "$host", $snmp_method, "$request->[1]",
                 $callback, "$host", "$request->[1]",
             );
-
-            unless($req_id) {
-                $host->error($host->_snmp_errstr);
-                next HOST;
-            }
-        }
-        else {
-            $host->error('$$host->cannot(%s)', $snmp_method);
-            next HOST;
         }
 
-        $host->error(""); # ok
-    }
-    continue {
-        if(!$host->error) {
+        if($req_id) { # ok
+            $host->error("");
             $host = undef;
         }
-        elsif($host->error and @$host == 0) {
+        else { # error
+            $host->error($host->_snmp_errstr || 'Invalid request');
+            $host->($host);
+        }
+    }
+    continue {
+        if($host and @$host == 0) {
+            $self->log(info => '%s complete', "$host");
             $self->_dec_sessions;
             $host = undef;
         }
@@ -485,7 +476,8 @@ BEGIN {
         }
 
         $self->log(debug => 'Callback for %s...', "$host");
-        $host->($host, $error);
+        $host->error($error);
+        $host->($host);
         $host->clear_results;
 
         return $self->_dispatch($host);
