@@ -15,16 +15,7 @@ SNMP::Parallel::Lock - A role for locking
 =cut
 
 use Moose::Role;
-
-has _lock => (
-    is => 'ro',
-    default => sub {
-        my $LOCK_FH;
-        my $LOCK;
-        open($LOCK_FH, "+<", \$LOCK) or die "Cannot create LOCK\n";
-        return $LOCK_FH;
-    },
-);
+use Fcntl ':flock';
 
 =head1 METHODS
 
@@ -37,12 +28,14 @@ Returns true when the lock has been released. Check C<$!> on failure.
 =cut
 
 sub wait_for_lock {
-    my $self    = shift;
-    my $LOCK_FH = $self->_lock;
+    my $self = shift;
 
-    $self->log->trace("Waiting for lock to unlock...");
-    flock $LOCK_FH, 2 or return;
-    $self->log->trace("The lock got unlocked, but is now locked again");
+    $self->log(trace => "Waiting for lock");
+
+    unless(flock DATA, LOCK_EX) {
+        $self->log(fatal => "Locking failed: %s", $!);
+        return;
+    }
 
     return 1;
 }
@@ -56,11 +49,14 @@ Will unlock the lock and return true. Check C<$!> on failure.
 =cut
 
 sub unlock {
-    my $self    = shift;
-    my $LOCK_FH = $self->_lock;
+    my $self = shift;
 
     $self->log->trace("Unlocking lock");
-    flock $LOCK_FH, 8 or return;
+
+    unless(flock DATA, LOCK_EX) {
+        $self->log(fatal => "Unlocking failed: %s", $!);
+        return;
+    }
 
     return 1;
 }
@@ -78,3 +74,6 @@ See L<SNMP::Parallel>
 =cut
 
 1;
+
+__DATA__
+This is the content of the locked filehandle :-)
