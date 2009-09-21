@@ -2,10 +2,11 @@ NAME
     SNMP::Parallel - An effective SNMP-information-gathering module
 
 VERSION
-    0.00_0001
+    0.02
 
 DISCLAIMER
-    THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY!
+    THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY AND ITS API IS SUBJECT TO
+    CHANGE.
 
     Please post any feedback and bug reports to "bug-snmp-parallel at
     rt.cpan.org".
