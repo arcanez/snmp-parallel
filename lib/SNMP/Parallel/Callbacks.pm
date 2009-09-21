@@ -40,8 +40,8 @@ SNMP::Parallel->add_snmp_callback(set => set => sub {
 
     return 'timeout' unless(ref $res);
 
-    for my $r (grep { ref $_ } @$res) {
-        $host->add_result($r, $req);
+    for my $i (0..@$res) {
+        $host->add_result($res->[$i], $req->[$i]);
     }
 
     return '';
@@ -59,8 +59,8 @@ SNMP::Parallel->add_snmp_callback(get => get => sub {
 
     return 'timeout' unless(ref $res);
 
-    for my $r (grep { ref $_ } @$res) {
-        $host->add_result($r, $req);
+    for my $i (0..@$res) {
+        $host->add_result($res->[$i], $req->[$i]);
     }
 
     return '';
@@ -78,8 +78,8 @@ SNMP::Parallel->add_snmp_callback(getnext => getnext => sub {
 
     return 'timeout' unless(ref $res);
 
-    for my $r (grep { ref $_ } @$res) {
-        $host->add_result($r, $req);
+    for my $i (0..@$res) {
+        $host->add_result($res->[$i], $req->[$i]);
     }
 
     return '';
@@ -96,30 +96,30 @@ OID branch is walked.
 SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     my($self, $host, $req, $res) = @_;
     my $i = 0;
+    my $splice;
 
     return 'timeout' unless(ref $res);
 
     while($i < @$res) {
-        my $splice = 2;
+        $splice = 1;
 
-        if(my $r = $res->[$i]) {
-            my($cur_oid, $ref_oid) = make_numeric_oid(
-                                         $r->name, $req->[$i]->name
-                                     );
+        my $res_i = $res->[$i] or next;
+        my $req_i = $req->[$i];
+        my($res_oid, $req_oid) = make_numeric_oid($res_i->name, $req_i->name);
 
-            $r->[0] = $cur_oid;
-            $splice--;
-
-            if(defined match_oid($cur_oid, $ref_oid)) {
-                $host->add_result($r, $req);
-                $splice--;
-                $i++;
-            }
+        if(match_oid($res_oid, $req_oid)) {
+            $host->add_result($res_i, $req_i);
+            $req_i->[0] = $res_oid;
+            $splice = 0;
         }
-
+    }
+    continue {
         if($splice) {
             splice @$req, $i, 1;
             splice @$res, $i, 1;
+        }
+        else {
+            $i++;
         }
     }
 

@@ -38,6 +38,7 @@ sub push : method {
         my $self = shift;
 
         if(UNIVERSAL::isa($_[0], 'ARRAY')) {
+            return unless(ref $_[1]);
             return(push @{ $reader->($self) },
                 SNMP::Parallel::Result->new(
                     tag => $_[0]->tag,
@@ -49,6 +50,8 @@ sub push : method {
                 )
             );
         }
+
+        return;
     };
 }
 
