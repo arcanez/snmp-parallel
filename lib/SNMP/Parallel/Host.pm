@@ -64,33 +64,24 @@ sub _build_session {
     local $! = 0;
 
     if(my $session = SNMP::Session->new(%{ $self->arg })) {
-        $self->fatal("");
+        $self->error("");
         return $session;
     }
     else {
         my($retry, $msg) = _check_errno();
-        $self->fatal($msg);
+        $self->error($msg);
         return;
     }
 }
 
 =head2 results
 
- $hash_ref = $self->results;
- $self->clear_results;
+ $array_ref = $self->results;
  $self->add_result(...);
 
-Get the retrieved SNMP results:
+Get the retrieved SNMP results, in the same order as requested.
 
- {
-   $oid => {
-     $iid => $result_object,
-     ...,
-   },
-   ...,
- }
-
-See L<SNMP::Parallel::Result>. for the api for the stored object.
+See L<SNMP::Parallel::Result>. for the api for the stored elements.
 See L<SNMP::Parallel::AttributeHelpers::MethodProvider::Result> for the
 different ways to use C<add_result(...)>.
 
@@ -98,29 +89,41 @@ different ways to use C<add_result(...)>.
 
 has results => (
     traits => [qw/SNMP::Parallel::AttributeHelpers::Trait::Result/],
-    clearer => 'clear_results',
     provides => {
-        set => 'add_result',
+        push => 'add_result',
     },
 );
 
-=head2 fatal
+=head2 error
 
- $str = $self->fatal;
+ $str = $self->error;
 
 Returns a string if the host should stop retrying an action. Example:
 
  until($session = $self->session) {
-    die $self->fatal if($self->fatal);
+    die $self->error if($self->error);
  }
 
 =cut
 
-has fatal => (
+has error => (
     is => 'rw',
     isa => 'Str',
     default => "",
+    trigger => sub {
+        $_[0]->log(debug => '%s->error(%s)', "$_[0]", $_[1]) if($_[1]);
+    },
 );
+
+sub _snmp_errstr {
+    ($_[0]->has_session and $_[0]->session) ? $_[0]->session->{'ErrorStr'}
+  :                                           'No session';
+}
+
+sub _snmp_errnum {
+    ($_[0]->has_session and $_[0]->session) ? $_[0]->session->{'ErrorNum'}
+  :                                           -1;
+}
 
 =head1 METHODS
 
@@ -166,6 +169,18 @@ sub _check_errno {
     }
 
     return $retry, $string;
+}
+
+=head2 clear_results
+
+ $self->clear_results;
+
+Will clear all results from a host.
+
+=cut
+
+sub clear_results {
+    @{ shift->results } = ();
 }
 
 =head1 COPYRIGHT & LICENSE
