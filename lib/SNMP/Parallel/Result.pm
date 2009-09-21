@@ -57,7 +57,7 @@ has type => (
 
 has _req => (
     is => 'ro',
-    isa => 'SNMP::VarList',
+    isa => 'SNMP::Varbind',
     required => 1,
 );
 
