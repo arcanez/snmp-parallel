@@ -151,8 +151,8 @@ METHODS
     data is set and/or retrieved, it will call the callback-method, as
     defined globally or per host.
 
-    Return true on success, false if no hosts are set up and "undef" if
-    "SNMP::MainLoop()" exit after master_timeout seconds.
+    Return true on success, and false if "master_timeout" is reached before
+    all data is collected.
 
   add_snmp_callback
      $class->add_snmp_callback($name, $snmp_method, sub {});
@@ -184,21 +184,17 @@ The callback method
     of a callback method:
 
      sub my_callback {
-       my($host, $error) = @_
+       my $host = shift;
 
-       if($error) {
-          warn "$host failed with this error: $error"
+       if(my $error = $host->error) {
+          warn "$host failed with this error: $error";
           return;
        }
 
-       my $data = $host->results;
+       printf '%s returned data:\n', $host;
 
-       for my $oid (keys %$data) {
-         print "$host returned oid $oid with this data:\n";
-         print join "\n\t",
-               map { "$_ => $data->{$oid}{$_}" }
-               keys %{ $data->{$oid}{$_} };
-         print "\n";
+       for my $obj (@{ $host->results }) {
+         printf "%s => %s", $obj->name, "$obj";
        }
      }
 

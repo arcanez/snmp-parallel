@@ -519,9 +519,9 @@ method, provided by the C<< Callback => sub{} >> argument. Here is an
 example of a callback method:
 
  sub my_callback {
-   my($host, $error) = @_;
+   my $host = shift;
 
-   if($error) {
+   if(my $error = $host->error) {
       warn "$host failed with this error: $error";
       return;
    }
@@ -529,7 +529,7 @@ example of a callback method:
    printf '%s returned data:\n', $host;
 
    for my $obj (@{ $host->results }) {
-     printf "%s => %s", $obj->full_oid, $obj;
+     printf "%s => %s", $obj->name, "$obj";
    }
  }
 
