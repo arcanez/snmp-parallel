@@ -9,5 +9,5 @@ use Test::More tests => 1;
 my $parallel = SNMP::Parallel->new;
 my $methods = $parallel->meta->snmp_callback_map;
 
-can_ok($parallel, map { "_cb_$_" } keys %$methods);
+can_ok($parallel, map { "&callback_$_" } keys %$methods);
 

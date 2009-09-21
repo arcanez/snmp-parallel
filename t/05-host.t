@@ -14,12 +14,7 @@ my $host = SNMP::Parallel::Host->new(
                address => $addr,
                callback => sub { 42 },
            );
-my $result = {
-                 value => 123,
-                 type => 'INTEGER',
-                 oid => '1.2.3.4',
-                 iid => '1',
-             };
+my $result = SNMP::Varbind->new(["sysDescr", 1, 42, 'INTEGER']);
 my $tmp;
 
 is_deeply($host->arg, {
@@ -35,11 +30,15 @@ is(int(@$host), 0, "varbind overloaded");
 is($host->(), 42, "callback overloaded");
 isa_ok($$host, "SNMP::Session", "session");
 
-ok($host->add_result($result), "result added");
-ok($host->results->{$result->{'oid'}}, "results->oid");
-ok($host->results->{$result->{'oid'}}->{$result->{'iid'}}, "results->oid->iid");
-$tmp = $host->results->{$result->{'oid'}}->{$result->{'iid'}};
+{
+    local $SNMP::Parallel::CURRENT_CALLBACK_NAME = 'get';
+    ok($host->add_result($result, $result), 'result added');
+    is(int( @{ $host->results } ), 1, 'result defined');
+}
 
-is("$tmp", $result->{'value'}, "res->value overload");
-is($tmp->oid, $result->{'oid'}, "res->oid");
-is($tmp->type, $result->{'type'}, "res->type");
+$tmp = $host->results->[0];
+
+is("$tmp", $result->val, "res->value overload");
+is($tmp->name, $result->name, "res->oid");
+is($tmp->type, $result->type, "res->type");
+is($tmp->callback, 'get', 'res->callback');

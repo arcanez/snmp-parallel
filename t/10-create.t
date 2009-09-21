@@ -26,7 +26,7 @@ Log::Log4perl->easy_init($ENV{'VERBOSE'} ? $TRACE : $FATAL);
 $parallel = SNMP::Parallel->new(max_sessions => $max_sessions);
 
 ok($parallel, 'object constructed');
-ok(!$parallel->execute, "cannot execute without hosts");
+ok($parallel->execute, "execute returns true - without any hosts");
 
 # add
 $parallel->add(
