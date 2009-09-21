@@ -274,11 +274,10 @@ sub add {
 
     # setup varlist
     for my $k (keys %{ $self->meta->callback_map }) {
-        if($in->{$k}) {
-            push @{ $in->{'varlist'} }, [
-                $k => ref $in->{$k} eq 'ARRAY' ? @{$in->{$k}} : $in->{$k}
-            ];
-        }
+        next unless($in->{$k});
+        push @{ $in->{'varlist'} }, [
+            $k => ref $in->{$k} eq 'ARRAY' ? @{$in->{$k}} : $in->{$k}
+        ];
     }
 
     # add/modify hosts

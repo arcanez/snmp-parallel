@@ -103,15 +103,14 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     while($i < @$res) {
         $splice = 1;
 
-        my $res_i = $res->[$i] or next;
+        my $res_i = $res->[$i];
         my $req_i = $req->[$i];
-        my($res_oid, $req_oid) = make_numeric_oid($res_i->name, $req_i->name);
 
-        if(match_oid($res_oid, $req_oid)) {
-            $host->add_result($res_i, $req_i);
-            $req_i->[0] = $res_oid;
-            $splice = 0;
-        }
+        next if($res_i->val eq 'ENDOFMIBVIEW');
+        next if(!match_oid( make_numeric_oid($res_i->name, $req_i->name) ));
+
+        $host->add_result($res_i, $req_i);
+        $splice = 0;
     }
     continue {
         if($splice) {
@@ -124,7 +123,7 @@ SNMP::Parallel->add_snmp_callback(walk => getnext => sub {
     }
 
     if(@$res) {
-        $$host->getnext($req, [ '&callback_walk' => $self, $host, $req ]);
+        $$host->getnext($res, [ '&callback_walk' => $self, $host, $req ]);
         return;
     }
     else {
