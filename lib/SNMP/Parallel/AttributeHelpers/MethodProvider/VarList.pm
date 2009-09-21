@@ -49,8 +49,9 @@ sub push : method {
 
                 # create varbind
                 if(ref $oid eq '') {
+                    my $iid = $oid =~ s/^(\D+).(\d+)$/$1/ ? $2 : undef;
                     $oid = SNMP::Varbind->new([
-                               $oid, # undef, $value, $type
+                               $oid, $iid, # undef, $value, $type
                            ]);
                 }
 
