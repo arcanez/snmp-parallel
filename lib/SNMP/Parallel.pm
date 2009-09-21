@@ -101,7 +101,8 @@ with qw/SNMP::Parallel::Role SNMP::Parallel::Lock/;
 require SNMP::Parallel::Callbacks;
 
 our $VERSION = '0.00_001';
-my $around_cb_sub;
+our $CURRENT_CALLBACK_NAME; # used in AttributeHelpers::MethodProvider::Result
+
 
 =head1 OBJECT ATTRIBUTES
 
@@ -458,11 +459,18 @@ See L<SNMP::Parallel::Callbacks> for default callbacks.
 
 =cut
 
-BEGIN {
-    # need to be set in BEGIN{}, unless it will be undef on compile time
-    # called from SNMP.pm
-    # $around_cb_sub->($self, $host, $req, $res);
-    $around_cb_sub = sub {
+sub add_snmp_callback {
+    my($self, $name, $snmp_method, $sub) = @_;
+
+    unless(SNMP::Session->can($snmp_method)) {
+        confess "SNMP::Session cannot '$snmp_method'";
+    }
+
+    my $meta = $self->meta;
+    my $callback_name = "\x26callback_$name";
+    my $around_cb_sub = sub {
+        local $CURRENT_CALLBACK_NAME = $name;
+
         my $next  = shift;
         my $self  = shift;
         my $host  = $_[0];
@@ -482,16 +490,6 @@ BEGIN {
 
         return $self->_dispatch($host);
     };
-}
-
-sub add_snmp_callback {
-    my($self, $name, $snmp_method, $sub) = @_;
-    my $meta = $self->meta;
-    my $callback_name = "\x26callback_$name";
-
-    unless(SNMP::Session->can($snmp_method)) {
-        confess "SNMP::Session cannot '$snmp_method'";
-    }
 
     $meta->snmp_callback_map->{$name} = $snmp_method;
     $meta->callback_map->{$name} = $callback_name;
