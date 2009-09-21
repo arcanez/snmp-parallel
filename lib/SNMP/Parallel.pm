@@ -272,7 +272,7 @@ sub add {
     }
 
     # setup varlist
-    for my $k (keys %{ $self->meta->snmp_callback_map }) {
+    for my $k (keys %{ $self->meta->callback_map }) {
         if($in->{$k}) {
             push @{ $in->{'varlist'} }, [
                 $k => ref $in->{$k} eq 'ARRAY' ? @{$in->{$k}} : $in->{$k}
@@ -291,7 +291,7 @@ sub add {
             delete $in->{'dest_host'};
 
             if(my $host = $self->get_host($addr)) {
-                $self->log(debug => 'Update %s: %s', $addr, $in);
+                $self->log(debug => 'Update "%s": %s', $addr, $in);
                 $host->add_varlist(@{ $in->{'varlist'} });
                 $self->_add_host({ # replace existing host
                     address  => $addr,
@@ -302,7 +302,7 @@ sub add {
                 });
             }
             else {
-                $self->log(debug => 'New %s: %s', $addr, $in);
+                $self->log(debug => 'Add "%s": %s', $addr, $in);
                 $self->_add_host({
                     address  => $addr,
                     arg      => $in->{'arg'}      || $self->arg,
@@ -335,8 +335,8 @@ necessary, or until L<master_timeout> seconds has passed. Every time some
 data is set and/or retrieved, it will call the callback-method, as defined
 globally or per host.
 
-Return true on success, false if no hosts are set up and C<undef> if 
-C<SNMP::MainLoop()> exit after L<master_timeout> seconds.
+Return true on success, and false if L</master_timeout> is reached before
+all data is collected.
 
 =cut
 
@@ -347,7 +347,7 @@ sub execute {
     # no hosts to get data from
     unless($self->hosts) {
         $self->log(warn => 'Cannot execute: No hosts defined');
-        return 0;
+        return 1;
     }
 
     $self->log(warn => 'Execute dispatcher with timeout=%s', $timeout);
@@ -355,9 +355,12 @@ sub execute {
     if($self->_dispatch) {
         if($timeout) {
             eval {
-                SNMP::MainLoop($timeout, sub { die "TIMEOUT\n" });
+                SNMP::MainLoop($timeout, sub { die "timeout\n" });
                 1;
-            } or return;
+            } or do {
+                $self->log(fatal => 'execute() failed: %s', $@);
+                return 0;
+            };
         }
         else {
             SNMP::MainLoop();
@@ -373,7 +376,7 @@ sub execute {
 sub _dispatch {
     my $self = shift;
     my $host = shift;
-    my($request, $req_id, $snmp_method);
+    my($request, $req_id, $snmp_method, $callback);
 
     $self->wait_for_lock;
 
@@ -387,13 +390,14 @@ sub _dispatch {
         $host      ||= $self->_shift_host   or last HOST;
         $request     = $host->shift_varbind or next HOST;
         $snmp_method = $self->meta->snmp_callback_map->{$request->[0]};
+        $callback    = $self->meta->callback_map->{$request->[0]};
         $req_id      = undef;
 
         unless($host->has_session) {
             $self->_inc_sessions;
         }
         unless($host->session) {
-            # $host->fatal is set inside session()
+            # $host->error is set inside session()
             next HOST;
         }
 
@@ -401,27 +405,32 @@ sub _dispatch {
         if($$host->can($snmp_method)) {
             $req_id = $$host->$snmp_method(
                           $request->[1],
-                          [ "_cb_$request->[0]", $self, $host, $request->[1] ]
+                          [ $callback, $self, $host, $request->[1] ]
                       );
-            $self->log(trace => '$self->_%s( %s->%s(...) )',
-                $request->[0], $host, $snmp_method
-            );
-        }
 
-        if($req_id) {
-            $self->log(trace => "%s request %s", "$host", $request->[0]);
+            $self->log(trace => '%s->%s(%s, [%s, $self, %s, %s])',
+                "$host", $snmp_method, "$request->[1]",
+                $callback, "$host", "$request->[1]",
+            );
+
+            unless($req_id) {
+                $host->error($host->_snmp_errstr);
+                next HOST;
+            }
         }
         else {
-            $host->fatal("Could not create request: " .$request->[0]);
+            $host->error('$$host->cannot(%s)', $snmp_method);
             next HOST;
         }
+
+        $host->error(""); # ok
     }
     continue {
-        if($req_id or !@$host) {
-            $host = undef; # done
+        if(!$host->error) {
+            $host = undef;
         }
-        elsif($host->fatal) {
-            $self->log(error => '%s failed: %s', "$host", $host->fatal);
+        elsif($host->error and @$host == 0) {
+            $self->_dec_sessions;
             $host = undef;
         }
     }
@@ -475,7 +484,7 @@ BEGIN {
             return;
         }
 
-        $self->log(debug => 'Callback for %s...', $host);
+        $self->log(debug => 'Callback for %s...', "$host");
         $host->($host, $error);
         $host->clear_results;
 
@@ -486,13 +495,14 @@ BEGIN {
 sub add_snmp_callback {
     my($self, $name, $snmp_method, $sub) = @_;
     my $meta = $self->meta;
-    my $callback_name = "_cb_$name";
+    my $callback_name = "\x26callback_$name";
 
     unless(SNMP::Session->can($snmp_method)) {
-        confess("SNMP::Session cannot '$snmp_method'");
+        confess "SNMP::Session cannot '$snmp_method'";
     }
 
     $meta->snmp_callback_map->{$name} = $snmp_method;
+    $meta->callback_map->{$name} = $callback_name;
     $meta->add_method($callback_name => $sub);
     $meta->add_around_method_modifier($callback_name => $around_cb_sub);
 }
@@ -516,21 +526,17 @@ method, provided by the C<< Callback => sub{} >> argument. Here is an
 example of a callback method:
 
  sub my_callback {
-   my($host, $error) = @_
+   my($host, $error) = @_;
 
    if($error) {
-      warn "$host failed with this error: $error"
+      warn "$host failed with this error: $error";
       return;
    }
 
-   my $data = $host->results;
+   printf '%s returned data:\n', $host;
 
-   for my $oid (keys %$data) {
-     print "$host returned oid $oid with this data:\n";
-     print join "\n\t",
-           map { "$_ => $data->{$oid}{$_}" }
-           keys %{ $data->{$oid}{$_} };
-     print "\n";
+   for my $obj (@{ $host->results }) {
+     printf "%s => %s", $obj->full_oid, $obj;
    }
  }
 
