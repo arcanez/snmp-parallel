@@ -31,6 +31,23 @@ has snmp_callback_map => (
     default => sub { {} },
 );
 
+=head2 snmp_callback_map
+
+ $hash_ref = $meta->callback_map;
+
+ {
+   $add_keyword => $method_name,
+   ...,
+ }
+
+=cut
+
+has callback_map => (
+    is => 'ro',
+    isa => 'HashRef',
+    default => sub { {} },
+);
+
 =head1 COPYRIGHT & LICENSE
 
 =head1 AUTHOR
