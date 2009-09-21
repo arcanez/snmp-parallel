@@ -14,6 +14,16 @@ use overload (
 
 =head1 ATTRIBUTES
 
+=head2 name
+
+=cut
+
+has name => (
+    is => 'ro',
+    isa => 'Str',
+    required => 1,
+);
+
 =head2 value
 
  $value = $self->value;
@@ -45,31 +55,11 @@ has type => (
     required => 1,
 );
 
-=head2 oid
-
- $str = $self->oid;
-
-=cut
-
-has oid => (
+has _req => (
     is => 'ro',
-    isa => 'Str',
+    isa => 'SNMP::VarList',
     required => 1,
 );
-
-=head2 iid
-
- $str = $self->iid;
-
-=cut
-
-has iid => (
-    is => 'ro',
-    isa => 'Str',
-    required => 1,
-);
-
-=head1 
 
 =head1 AUTHOR
 
