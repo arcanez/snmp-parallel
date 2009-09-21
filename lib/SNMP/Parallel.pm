@@ -376,9 +376,14 @@ sub execute {
 sub _dispatch {
     my $self = shift;
     my $host = shift;
-    my($request, $req_id, $snmp_method, $callback);
+    my($request, $req_id, $new, $snmp_method, $callback);
 
     $self->wait_for_lock;
+
+    if($host and @$host == 0) {
+        $self->log(info => '%s complete', "$host");
+        $self->_dec_sessions;
+    }
 
     HOST:
     while($self->sessions < $self->max_sessions or $host) {
@@ -387,12 +392,14 @@ sub _dispatch {
         $snmp_method = $self->meta->snmp_callback_map->{$request->[0]};
         $callback    = $self->meta->callback_map->{$request->[0]};
         $req_id      = undef;
+        $new         = 0;
 
         unless($host->has_session) {
-            $self->_inc_sessions;
+            $new = 1;
         }
         unless($host->session) {
             # $host->error is set inside session()
+            $host->($host);
             next HOST;
         }
 
@@ -407,23 +414,20 @@ sub _dispatch {
                 "$host", $snmp_method, "$request->[1]",
                 $callback, "$host", "$request->[1]",
             );
+
+            unless($req_id) {
+                $host->error($host->_snmp_errstr || 'Invalid request');
+                $host->($host);
+            }
         }
 
-        if($req_id) { # ok
-            $host->error("");
-            $host = undef;
-        }
-        else { # error
-            $host->error($host->_snmp_errstr || 'Invalid request');
-            $host->($host);
-        }
+        $host->error("");
     }
     continue {
-        if($host and @$host == 0) {
-            $self->log(info => '%s complete', "$host");
-            $self->_dec_sessions;
-            $host = undef;
+        if($new and $req_id) {
+            $self->_inc_sessions;
         }
+        $host = undef;
     }
 
     $self->log(debug => 'Sessions/max-sessions: %i<%i',
