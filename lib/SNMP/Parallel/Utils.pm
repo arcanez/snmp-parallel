@@ -57,7 +57,8 @@ Takes two arguments: One OID to match against, and the OID to match.
 sub match_oid {
     my $p = shift or return;
     my $c = shift or return;
-    return ($p =~ /^ \.? $c \.? (.*)/mx) ? $1 : undef;
+
+    return ($p =~ /^ \.? $c \.? (.*)/x) ? $1 : undef;
 }
 
 =head2 make_numeric_oid
