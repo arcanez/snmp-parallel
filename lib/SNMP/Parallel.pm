@@ -6,11 +6,11 @@ SNMP::Parallel - An effective SNMP-information-gathering module
 
 =head1 VERSION
 
-0.00_0001
+0.02
 
 =head1 DISCLAIMER
 
-THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY!
+THIS MODULE HAS NOT BEEN TESTED EXTENSIVELY AND ITS API IS SUBJECT TO CHANGE.
 
 Please post any feedback and bug reports to
 C<bug-snmp-parallel at rt.cpan.org>.
@@ -100,7 +100,7 @@ with qw/SNMP::Parallel::Role SNMP::Parallel::Lock/;
 # load default callbacks
 require SNMP::Parallel::Callbacks;
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.02';
 our $CURRENT_CALLBACK_NAME; # used in AttributeHelpers::MethodProvider::Result
 
 
@@ -563,6 +563,11 @@ under the same terms as Perl itself.
 =head1 AUTHOR
 
 Jan Henning Thorsen, C<< <jhthorse at cpan.org> >>
+
+=cut
+
+1;
+pan.org> >>
 
 =cut
 

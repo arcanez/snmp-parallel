@@ -16,5 +16,7 @@ test_requires q(Test::More) => 0.94;
 bugtracker 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=SNMP-Parallel';
 repository 'git://github.com/jhthorsen/snmp-parallel.git';
 
+no_index q(examples);
+
 auto_install;
 WriteAll;

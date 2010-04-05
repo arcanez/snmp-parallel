@@ -1,5 +1,9 @@
 Revision history for SNMP-Parallel
 
-0.01 Thu, 17 Apr 2008 16:00:00 +0100
-   * Renamed SNMP::Effective to SNMP::Parallel
+0.02 Mon Sep 21 23:51:57 2009 +0200
+   * 20-run.t is ok, meaning the code runs.
+   * Disclaimer: api will change.
+
+0.01 Thu Jul 30 00:48:34 2009 +0200
+   * Renamed SNMP::Effective to SNMP::Parallel.
 
