@@ -1,25 +1,18 @@
-#!perl
-
-BEGIN {
-    use File::Find;
-    use Test::More;
-
-    my $dir = './lib';
-    my @modules;
-
-    unshift @INC, $dir;
-
-    find(sub {
-        $_ = $File::Find::name;
-        if(s, ^ $dir /? (.*) \.pm $ ,$1,x) {
-            s,/,::,g;
-            push @modules, $_;
-        }
-    }, $dir);
-
-    plan tests => int(@modules);
-
-    for my $mod (@modules) {
-        use_ok($mod);
-    }
-}
+#!/usr/bin/perl
+use lib qw(lib);
+use Test::More;
+plan tests => 14;
+use_ok('SNMP::Parallel');
+use_ok('SNMP::Parallel::AttributeHelpers::MethodProvider::HostList');
+use_ok('SNMP::Parallel::AttributeHelpers::MethodProvider::Result');
+use_ok('SNMP::Parallel::AttributeHelpers::MethodProvider::VarList');
+use_ok('SNMP::Parallel::AttributeHelpers::Trait::HostList');
+use_ok('SNMP::Parallel::AttributeHelpers::Trait::Result');
+use_ok('SNMP::Parallel::AttributeHelpers::Trait::VarList');
+use_ok('SNMP::Parallel::Callbacks');
+use_ok('SNMP::Parallel::Host');
+use_ok('SNMP::Parallel::Lock');
+use_ok('SNMP::Parallel::Meta::Role');
+use_ok('SNMP::Parallel::Result');
+use_ok('SNMP::Parallel::Role');
+use_ok('SNMP::Parallel::Utils');
